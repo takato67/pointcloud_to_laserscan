@@ -73,7 +73,7 @@ namespace pointcloud_to_laserscan
     //Check if explicitly single threaded, otherwise, let nodelet manager dictate thread pool size
     if (concurrency_level == 1)
     {
-      nh_ = getNodeHandle();
+      nh_ = getNodeHandle();      //detect nh_ in ~nodlet.h
     }
     else
     {
@@ -95,8 +95,8 @@ namespace pointcloud_to_laserscan
     {
       tf2_.reset(new tf2_ros::Buffer());
       tf2_listener_.reset(new tf2_ros::TransformListener(*tf2_));
-      message_filter_.reset(new MessageFilter(sub_, *tf2_, target_frame_, input_queue_size_, nh_));
-      message_filter_->registerCallback(boost::bind(&PointCloudToLaserScanNodelet::cloudCb, this, _1));
+      message_filter_.reset(new MessageFilter(sub_, *tf2_, target_frame_, input_queue_size_, nh_));     //message filter
+      message_filter_->registerCallback(boost::bind(&PointCloudToLaserScanNodelet::cloudCb, this, _1)); //in boost::bind, this arg is stable
       message_filter_->registerFailureCallback(boost::bind(&PointCloudToLaserScanNodelet::failureCb, this, _1, _2));
     }
     else // otherwise setup direct subscription
@@ -109,17 +109,17 @@ namespace pointcloud_to_laserscan
                                                  boost::bind(&PointCloudToLaserScanNodelet::disconnectCb, this));
   }
 
-  void PointCloudToLaserScanNodelet::connectCb()
+  void PointCloudToLaserScanNodelet::connectCb()      //in the case of sub connection
   {
     boost::mutex::scoped_lock lock(connect_mutex_);
     if (pub_.getNumSubscribers() > 0 && sub_.getSubscriber().getNumPublishers() == 0)
     {
       NODELET_INFO("Got a subscriber to scan, starting subscriber to pointcloud");
-      sub_.subscribe(nh_, "cloud_in", input_queue_size_);
+      sub_.subscribe(nh_, "cloud_in", input_queue_size_);       //topic detected
     }
   }
 
-  void PointCloudToLaserScanNodelet::disconnectCb()
+  void PointCloudToLaserScanNodelet::disconnectCb()      //in the case of sub disconnection
   {
     boost::mutex::scoped_lock lock(connect_mutex_);
     if (pub_.getNumSubscribers() == 0)
@@ -130,13 +130,13 @@ namespace pointcloud_to_laserscan
   }
 
   void PointCloudToLaserScanNodelet::failureCb(const sensor_msgs::PointCloud2ConstPtr &cloud_msg,
-                                               tf2_ros::filter_failure_reasons::FilterFailureReason reason)
+                                               tf2_ros::filter_failure_reasons::FilterFailureReason reason)   //failure
   {
     NODELET_WARN_STREAM_THROTTLE(1.0, "Can't transform pointcloud from frame " << cloud_msg->header.frame_id << " to "
         << message_filter_->getTargetFramesString());
   }
 
-  void PointCloudToLaserScanNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPtr &cloud_msg)
+  void PointCloudToLaserScanNodelet::cloudCb(const sensor_msgs::PointCloud2ConstPtr &cloud_msg)   //nodelet ,multi
   {
 
     //build laserscan output

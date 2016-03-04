@@ -82,7 +82,7 @@ namespace pointcloud_to_laserscan
 
     boost::shared_ptr<tf2_ros::Buffer> tf2_;
     boost::shared_ptr<tf2_ros::TransformListener> tf2_listener_;
-    message_filters::Subscriber<sensor_msgs::PointCloud2> sub_;
+    message_filters::Subscriber<sensor_msgs::PointCloud2> sub_;       //message form is pointcloud2
     boost::shared_ptr<MessageFilter> message_filter_;
 
     // ROS Parameters

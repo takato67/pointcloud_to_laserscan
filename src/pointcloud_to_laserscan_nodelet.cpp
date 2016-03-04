@@ -52,7 +52,7 @@ namespace pointcloud_to_laserscan
   void PointCloudToLaserScanNodelet::onInit()
   {
     boost::mutex::scoped_lock lock(connect_mutex_);
-    private_nh_ = getPrivateNodeHandle();
+    private_nh_ = getPrivateNodeHandle();             //param detection
 
     private_nh_.param<std::string>("target_frame", target_frame_, "");
     private_nh_.param<double>("transform_tolerance", tolerance_, 0.01);
